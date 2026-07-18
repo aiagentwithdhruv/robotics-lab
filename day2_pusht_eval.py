@@ -14,8 +14,11 @@ policy = DiffusionPolicy.from_pretrained("lerobot/diffusion_pusht")
 policy.to(device)
 policy.reset()
 
+import sys
+seed = int(sys.argv[1]) if len(sys.argv) > 1 else 42
 env = gym.make("gym_pusht/PushT-v0", obs_type="pixels_agent_pos", max_episode_steps=300)
-obs, info = env.reset(seed=42)
+obs, info = env.reset(seed=seed)
+print(f"seed: {seed}")
 
 frames = [env.render()]
 done = False
@@ -30,6 +33,6 @@ while not done and step < 300:
     done = terminated or truncated
     step += 1
 
-out = Path.home() / "robotics-lab" / "day2_pusht.mp4"
+out = Path.home() / "robotics-lab" / f"day2_pusht_seed{seed}.mp4"
 imageio.mimsave(str(out), np.stack(frames), fps=25)
 print(f"steps: {step} | success: {terminated} | video: {out}")
